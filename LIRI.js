@@ -1,35 +1,77 @@
 require("dotenv").config();
 
-var moment = require('moment');
-var axios = require('axios');
-var keys = require("./keys.js");
+const moment = require('moment');
+const axios = require('axios');
+const keys = require("./keys.js");
+const Spotify = require('node-spotify-api');
+const inquirer = require('inquirer');
 
-// var spotify = new Spotify(keys.spotify); there is no Spotify constructor, why is this an instruction?
+var spotify = new Spotify(keys.spotify);
 
 var argument = process.argv[2];
 var search_terms = process.argv.slice(3).join("+");
 
-// concert_this
 function concert_this(artist)
 {
-	var bands_url = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp" // this just returns an empty array in 90% of cases
+	if(!artist)
+	{
+		artist = "the+correspondents"
+		console.log("No band entered. Here's a band I recommend:\n")
+	}
+	var bands_url = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"
 	axios.get(bands_url)
 	.then(function(response)
 	{
-		var new_time = response[0].datetime.split("T");
-		console.log(
-			"The next band appearance will be at: " + response[0].venue.name + " Venue."
-			+ "\nThe venue location is: " + response[0].venue.city + ", " + response[0].venue.country
-			+ "\nThe event will be on: " + moment(new_time[0], "YYYY-MM-DD").format("MM/DD/YYYY") + ", at " + new_time[1]
-		);
+		console.log(response.data);
+		if(!response[0])
+		{
+			console.log("Oops! This band has no venues right now! Try again later");
+		}
+		else
+		{
+			var data_response = response.data[0];
+			var new_time = data_response.datetime.split("T");
+			console.log(
+				"Results for the band: " + data_response.artist.name
+				+ "\nThe next band appearance will be at: " + data_response.venue.name + " Venue."
+				+ "\nThe venue location is: " + data_response.venue.city + ", " + data_response.venue.country
+				+ "\nThe event will be on: " + moment(new_time[0], "YYYY-MM-DD").format("MM/DD/YYYY") + ", at " + moment(new_time[1], "HH:mm:ss").format("h:mm a")
+			);
+		}
+	})
+	.catch(function(err)
+	{
+		console.log(err);
 	});
 }
-// spotify_this_song
-function spotify_this_song()
-{
 
+function spotify_this_song(track)
+{
+	if(!track)
+	{
+		track = "venetian+snares" //dude it's so hard to search for songs made by this band. the api keeps returning null.
+		console.log("You haven't specified a track. Here's a song I recommend:\n")
+	}
+	spotify.search(
+	{
+		type: 'track', query: track
+	})
+	.then(function(response)
+	{
+		select_track = response.tracks.items[0];
+    	console.log(
+			"results for: " + select_track.name
+			+ "\n Artist(s): " + select_track.artists
+			+ "\n Genre(s): " + select_track
+			//I GIVE UP THIS IS SO FRUSTRATING!
+		);
+	})
+	.catch(function(err)
+	{
+		console.log(err);
+	});
 }
-// movie_this
+
 function movie_this()
 {
 	
