@@ -23,8 +23,7 @@ function concert_this(artist)
 	axios.get(bands_url)
 	.then(function(response)
 	{
-		console.log(response.data);
-		if(!response[0])
+		if(!response.data[0])
 		{
 			console.log("Oops! This band has no venues right now! Try again later");
 		}
@@ -33,16 +32,17 @@ function concert_this(artist)
 			var data_response = response.data[0];
 			var new_time = data_response.datetime.split("T");
 			var pretty_post = 
-				"Results for the band: " + data_response.artist.name
+				"\nResults for the band: " + data_response.artist.name
 				+ "\nThe next band appearance will be at: " + data_response.venue.name + " Venue."
 				+ "\nThe venue location is: " + data_response.venue.city + ", " + data_response.venue.country
 				+ "\nThe event will be on: " + moment(new_time[0], "YYYY-MM-DD").format("MM/DD/YYYY") + ", at " + moment(new_time[1], "HH:mm:ss").format("h:mm a")
+				+ "\n"
 			;
 			console.log(pretty_post);
 			fs.appendFile("log.txt", pretty_post, "utf8", function(err)
 			{
   				if (err) throw err;
-  				console.log('Saved!');
+  				// console.log('Saved!');
 			});
 		}
 	})
@@ -66,13 +66,20 @@ function spotify_this_song(track)
 	.then(function(response)
 	{
 		select_track = response.tracks.items[0];
-		console.log(select_track.album.external_urls.spotify);
-    	console.log(
-			"results for: " + select_track.name
+    	var pretty_post =
+			"\nresults for: " + select_track.name
 			+ "\nArtist(s): " + select_track.artists[0].name
 			+ "\nThis song was released in the album " + select_track.album.name
 			+ "\nListen to the song here: \n" + select_track.album.external_urls.spotify
-		);
+			+ "\n"
+		;
+
+		console.log(pretty_post);
+		fs.appendFile("log.txt", pretty_post, "utf8", function(err)
+		{
+  			if (err) throw err;
+  			// console.log('Saved!');
+		});
 	})
 	.catch(function(err)
 	{
@@ -91,8 +98,8 @@ function movie_this(movie)
 	axios.get(movie_url + "t=" + movie)
 	.then(function(response)
 	{
-		console.log(
-			"Results for: " + response.data.Title
+		var pretty_post =
+			"\nResults for: " + response.data.Title
 			+ "\nProduction year: " + response.data.Year
 			+ "\nIMDB rating: " + response.data.Ratings[0].Value
 			+ "\nRotton Tomatoes rating: " + response.data.Ratings[1].Value
@@ -100,11 +107,26 @@ function movie_this(movie)
 			+ "\nProduction language: " + response.data.Language
 			+ "\nPlot overview: " + response.data.Plot
 			+ "\nActors: " + response.data.Actors
-		);
+			+ "\n"
+		;
+		console.log(pretty_post);
+		fs.appendFile("log.txt", pretty_post, "utf8", function(err)
+		{
+  			if (err) throw err;
+  			// console.log('Saved!');
+		});
 	})
 	.catch(function(err)
 	{
 		console.log(err);
+	});
+}
+
+function do_what_it_says()
+{
+	fs.readFile('random.txt', 'utf8', (err, data) => {
+ 		if (err) throw err;
+ 		spotify_this_song(data);
 	});
 }
 
@@ -123,6 +145,6 @@ switch(argument)
 	break;
 
 	case "do-what-it-says":
-	spotify_this_song();
+	do_what_it_says();
 	break;
 }
