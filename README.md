@@ -17,7 +17,7 @@ Give start-to-finish instructions on how to run the app
 #### SPOTIFY_ID=YOUR_SPOTIFY_ID_HERE
 #### SPOTIFY_SECRET=YOUR_SPOTIFY_SECRET_HERE
 
-### after this you're ready to go. simply type in node LIRI.js and follow the prompts. You can also skip directly to the specific commands you want to run by typing node LIRI.js {command-here} separated by dashes rather than spaces. The LIRI bot is somewhat forgiving and can take instructions with a combination of spaces and dashes, though for best results separate everything with spaces.
+### after this you're ready to go. simply type in node LIRI.js and follow the prompts. You can also skip directly to the specific commands you want to run by typing node LIRI.js {command-here} separated by dashes rather than spaces. The LIRI bot is somewhat forgiving and can take instructions with a combination of spaces and dashes, though for best results separate everything with spaces when not inputting commands directly, and dashes when doing so.
 
 Include screenshots, gifs or videos of the app functioning
 
