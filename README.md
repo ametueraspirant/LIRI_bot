@@ -21,7 +21,7 @@ Give start-to-finish instructions on how to run the app
 
 Include screenshots, gifs or videos of the app functioning
 
-![yeah ok]()
+![yeah ok](images/readmegif.gif)
 
 Contain a link to a deployed version of the app
 
