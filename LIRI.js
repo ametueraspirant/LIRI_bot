@@ -11,6 +11,7 @@ var spotify = new Spotify(keys.spotify);
 
 var argument = process.argv[2];
 var search_terms = process.argv.slice(3).join("+");
+var replay = false;
 
 function concert_this(artist)
 {
@@ -80,6 +81,31 @@ function spotify_this_song(track)
   			if (err) throw err;
   			// console.log('Saved!');
 		});
+		if(!replay)
+		{
+			fs.readFile('random.txt', 'utf8', (err, data) => {
+ 				if (err) throw err;
+ 				var array = data.split(",");
+				for(var l00p = 0; l00p < array.length; l00p++)
+				{
+					if(select_track.name.toLowerCase() == array[l00p])
+					{
+						return;
+					}
+				}
+			does_exist();
+			});
+			function does_exist()
+			{
+				if(!check_exists)
+				{
+					fs.appendFile("random.txt", select_track.name.toLowerCase() + ",", "utf8", function(err)
+					{
+  						if (err) throw err;
+					});
+				}
+			}
+		}
 	})
 	.catch(function(err)
 	{
@@ -122,12 +148,18 @@ function movie_this(movie)
 	});
 }
 
-function do_what_it_says()
+function random_curated_song()
 {
 	fs.readFile('random.txt', 'utf8', (err, data) => {
  		if (err) throw err;
- 		spotify_this_song(data);
+ 		var array = data.split(",");
+		spotify_this_song(array[Math.floor(Math.random() * array.length)]);
 	});
+}
+
+function inquire_liri_bot()
+{
+	
 }
 
 switch(argument)
@@ -137,6 +169,7 @@ switch(argument)
 	break;
 
 	case "spotify-this-song":
+	replay = false;
 	spotify_this_song(search_terms);
 	break;
 
@@ -144,7 +177,12 @@ switch(argument)
 	movie_this(search_terms);
 	break;
 
-	case "do-what-it-says":
-	do_what_it_says();
+	case "random-curated-song":
+	replay = true;
+	random_curated_song();
+	break;
+
+	default:
+	inquire_liri_bot();
 	break;
 }
