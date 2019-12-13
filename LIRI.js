@@ -5,6 +5,7 @@ const axios = require('axios');
 const keys = require("./keys.js");
 const Spotify = require('node-spotify-api');
 const inquirer = require('inquirer');
+const fs = require('fs');
 
 var spotify = new Spotify(keys.spotify);
 
@@ -31,12 +32,18 @@ function concert_this(artist)
 		{
 			var data_response = response.data[0];
 			var new_time = data_response.datetime.split("T");
-			console.log(
+			var pretty_post = 
 				"Results for the band: " + data_response.artist.name
 				+ "\nThe next band appearance will be at: " + data_response.venue.name + " Venue."
 				+ "\nThe venue location is: " + data_response.venue.city + ", " + data_response.venue.country
 				+ "\nThe event will be on: " + moment(new_time[0], "YYYY-MM-DD").format("MM/DD/YYYY") + ", at " + moment(new_time[1], "HH:mm:ss").format("h:mm a")
-			);
+			;
+			console.log(pretty_post);
+			fs.appendFile("log.txt", pretty_post, "utf8", function(err)
+			{
+  				if (err) throw err;
+  				console.log('Saved!');
+			});
 		}
 	})
 	.catch(function(err)
