@@ -12,6 +12,7 @@ var spotify = new Spotify(keys.spotify);
 var argument = process.argv[2];
 var search_terms = process.argv.slice(3).join("+");
 var replay = false;
+var number_of_loops = 0;
 
 function concert_this(artist)
 {
@@ -97,13 +98,10 @@ function spotify_this_song(track)
 			});
 			function does_exist()
 			{
-				if(!check_exists)
+				fs.appendFile("random.txt", select_track.name.toLowerCase() + ",", "utf8", function(err)
 				{
-					fs.appendFile("random.txt", select_track.name.toLowerCase() + ",", "utf8", function(err)
-					{
-  						if (err) throw err;
-					});
-				}
+  					if (err) throw err;
+				});
 			}
 		}
 	})
@@ -159,7 +157,103 @@ function random_curated_song()
 
 function inquire_liri_bot()
 {
-	
+	inquirer.prompt(
+	[
+		{
+			type: "input",
+			name: "greeting",
+			message: "Hi! I'm lIRI! What would you like to do today?\n\nYou can type 'concert this' and then a band to search for nearby venues this band will be in!\nYou can type 'spotify this song' and then a song to search for that track on spotify.\nYou can also type 'movie this' and then a movie to bring up the cas list and other information!\nFinally. You can type 'random curated song' to bring up a list of premade songs, as well as the songs you've searched for previously!\n\nIf you would like to exit at any time, simply say 'exit'\n"
+		}	
+	])
+	.then(function(answer)
+	{
+		if(number_of_loops < 5)
+		{
+			response = answer.greeting.split(" ");
+			switch(response[0])
+			{
+				case "exit":
+				return console.log("alright, goodbye then!");
+				break;
+
+				case "concert":
+				if(response[1] === "this")
+				{
+					concert_this(response.slice(2).join("+"));
+				}
+				break;
+
+				case "concert-this":
+				concert_this(response.slice(1).join("+"));
+				break;
+
+				case "spotify":
+				if(response[1] === "this-song")
+				{
+					spotify_this_song(response.slice(2).join("+"));
+				}
+				else if(response[1] === "this" && response[2] === "song")
+				{
+					spotify_this_song(response.slice(3).join("+"));
+				}
+				break;
+
+				case "spotify-this":
+				if(response[1] === "song")
+				{
+					spotify_this_song(response.slice(2).join("+"));
+				}
+				break;
+
+				case "spotify-this-song":
+				spotify_this_song(response.slice(1).join("+"));
+				break;
+
+				case "movie":
+				if(response[1] === "this")
+				{
+					movie_this(response.slice(2).join("+"));
+				}
+				break;
+
+				case "movie-this":
+				movie_this(response.slice(1).join("+"));
+				break;
+
+				case "random":
+				if(response[1] === "curated-song")
+				{
+					random_curated_song();
+				}
+				else if(response[1] === "curated" && response[2] === "song");
+				{
+					random_curated_song();
+				}
+				break;
+
+				case "random-curated":
+				if(response[1] === "song")
+				{
+					random_curated_song();
+				}
+				break;
+
+				case "random-curated-song":
+				random_curated_song();
+				break;
+
+				default:
+				console.log("I'm sorry, I didn't understand that.\n");
+				inquire_liri_bot();
+				number_of_loops++;
+				break;
+			}
+		}
+		else
+		{
+			return console.log("I'm sorry, you're going to have to try again later. Goodbye!");
+		}
+	});
 }
 
 switch(argument)
