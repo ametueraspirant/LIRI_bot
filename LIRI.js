@@ -173,7 +173,7 @@ function inquire_liri_bot()
 			switch(response[0])
 			{
 				case "exit":
-				return console.log("alright, goodbye then!");
+				console.log("alright, goodbye then!");
 				break;
 
 				case "concert":
